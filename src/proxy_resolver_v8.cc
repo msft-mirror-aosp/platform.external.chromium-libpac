@@ -159,7 +159,7 @@ android::String16 V8StringToUTF16(v8::Handle<v8::String> s) {
   char16_t* buf = new char16_t[len + 1];
   s->Write(reinterpret_cast<uint16_t*>(buf), 0, len);
   android::String16 ret(buf, len);
-  delete[] buf;
+  delete buf;
   return ret;
 }
 
@@ -341,17 +341,6 @@ bool IsInNetEx(const std::string& ip_address, const std::string& ip_prefix) {
 }
 
 }  // namespace
-
-class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
-  public:
-   virtual void* Allocate(size_t length) {
-     void* data = AllocateUninitialized(length);
-     return data == NULL ? data : memset(data, 0, length);
-   }
-   virtual void* AllocateUninitialized(size_t length) { return malloc(length); }
-   virtual void Free(void* data, size_t) { free(data); }
-};
-
 
 // ProxyResolverV8::Context ---------------------------------------------------
 
@@ -711,19 +700,12 @@ class ProxyResolverV8::Context {
 
 // ProxyResolverV8 ------------------------------------------------------------
 
-bool ProxyResolverV8::initialized_for_this_process_ = false;
-
 ProxyResolverV8::ProxyResolverV8(
     ProxyResolverJSBindings* custom_js_bindings,
     ProxyErrorListener* error_listener)
     : context_(NULL), js_bindings_(custom_js_bindings),
       error_listener_(error_listener) {
-  if (!initialized_for_this_process_) {
-    v8::Platform* platform = v8::platform::CreateDefaultPlatform();
-    v8::V8::InitializePlatform(platform);
-    v8::V8::Initialize();
-    initialized_for_this_process_ = true;
-  }
+  v8::V8::Initialize();
 }
 
 ProxyResolverV8::~ProxyResolverV8() {
@@ -762,11 +744,7 @@ int ProxyResolverV8::SetPacScript(const android::String16& script_data) {
     return ERR_PAC_SCRIPT_FAILED;
 
   // Try parsing the PAC script.
-  ArrayBufferAllocator allocator;
-  v8::Isolate::CreateParams create_params;
-  create_params.array_buffer_allocator = &allocator;
-
-  context_ = new Context(js_bindings_, error_listener_, v8::Isolate::New(create_params));
+  context_ = new Context(js_bindings_, error_listener_, v8::Isolate::New());
   int rv;
   if ((rv = context_->InitV8(script_data)) != OK) {
     context_ = NULL;
