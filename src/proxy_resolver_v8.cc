@@ -10,6 +10,7 @@
 #include <string>
 #include <utils/String8.h>
 #include <v8.h>
+#include <libplatform/libplatform.h>
 #include <vector>
 
 #include "net_util.h"
