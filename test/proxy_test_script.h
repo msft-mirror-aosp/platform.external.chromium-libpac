@@ -667,6 +667,12 @@
   "  return \"DIRECT\";\n" \
   "}\n" \
 
+#define STRING_FUNCTIONS_JS \
+  "function FindProxyForURL(url, host) {\n" \
+  "  return \"direct\".toUpperCase();\n" \
+  "}\n" \
+  "\n" \
+
 #define UNHANDLED_EXCEPTION_JS \
   "function FindProxyForURL(url, host) {\n" \
   "  // This will throw a runtime exception.\n" \
