@@ -34,7 +34,8 @@ cc_library_shared {
         ],
     },
     apex_available: [
-        "com.android.i18n",
+        "com.android.art.release",
+        "com.android.art.debug",
     ],
     sanitize: {
         cfi: true,
