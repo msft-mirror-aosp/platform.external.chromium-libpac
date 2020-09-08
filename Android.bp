@@ -36,4 +36,7 @@ cc_library_shared {
     apex_available: [
         "com.android.i18n",
     ],
+    sanitize: {
+        cfi: true,
+    },
 }
